@@ -10,7 +10,7 @@ from config import *
 class App():
     def __init__(self) -> None:
         self.tk = tk.Tk()
-        self.tk.title("ygoMD translater")
+        self.tk.title("MD translater 'F1'开始检测")
         self.tk.minsize(200, 200)
         # manually resizing th window will cause th window to stop auto resizing, therefore disabled
         self.tk.resizable(False, False)
@@ -22,7 +22,7 @@ class App():
         # button in frame_control
         self.button_Start = tk.Button(
             master=self.frame_control,
-            text="暂停",
+            text="暂停[F2]",
             width=10,
             height=2,
             bg="grey",
@@ -32,7 +32,7 @@ class App():
 
         self.button_Mode = tk.Button(
             master=self.frame_control,
-            text="组卡/决斗",
+            text="组卡/决斗(~)",
             width=10,
             height=2,
             bg="grey",

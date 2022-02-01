@@ -12,19 +12,19 @@ def start():
 def kill():
     """method to exit searching
     """
-    mda.status_change(False, False, True)
+    mda.status_change(False, False, True,False)
 
 
 def pause():
     """method to pause searching
     """
-    mda.status_change(False, True, False)
+    mda.status_change(False, True, False,False)
 
 
 def switch_mode():
     """method to switch between deck / duel searching
     """
-    mda.status_change(True, False, False)
+    mda.status_change(True, False, False,False)
 
 # more methodes can be added to fit database search result
 

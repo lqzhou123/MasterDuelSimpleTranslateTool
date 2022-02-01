@@ -43,9 +43,11 @@ fileDir = './origin_ygo_img'
 c_dhash_dir = './card_image_check.db'
 c_ygo_dir = './cards.cdb'
 
-pause_hotkey = 'ctrl+p'
+pause_hotkey = 'F2'
+goon_hotkey = 'F1'
 exit_hotkey = 'ctrl+q'
-switch_hotkey = 'ctrl+s'
+switch_hotkey = '`'
+
 
 # for debug
 #debug_raw_img1 = './simple_img/s5.png'
@@ -395,9 +397,10 @@ def translate(type: int, cache: list, debug: bool = False, ygo_sql_ins=None):
 
 
 translate_type = 0
-pause = True
+pause = False
 process_exit = False
 enable_debug = False
+prostart = True
 
 
 def translate_check_thread():
@@ -405,16 +408,20 @@ def translate_check_thread():
     global pause
     global process_exit
     global enable_debug
+    global prostart
 
     cache = get_image_db_cache()
 
     ygo_sql = sqlite3.connect(c_ygo_dir)
     while(not process_exit):
-        if pause:
+        if prostart:
+            cls()
+            print("程序启动")
+            print(f"{switch_hotkey}切换检测卡组/决斗详细卡片信息,{goon_hotkey}开始检测,{pause_hotkey}暂停检测,{exit_hotkey}退出程序\n请确保您已经点开了目标卡片的详细信息!!!")
+        elif pause:
             cls()
             print("暂停")
-            print(
-                f"{switch_hotkey}切换检测卡组/决斗详细卡片信息,{pause_hotkey}暂停检测,{exit_hotkey}退出程序\n请确保您已经点开了目标卡片的详细信息!!!")
+            print(f"{switch_hotkey}切换检测卡组/决斗详细卡片信息,{goon_hotkey}继续检测,{exit_hotkey}退出程序\n请确保您已经点开了目标卡片的详细信息!!!")
         elif translate_type == 0:
             translate(translate_type+1, cache, enable_debug, ygo_sql)
         elif translate_type == 1:
@@ -424,15 +431,19 @@ def translate_check_thread():
         time.sleep(1)
     ygo_sql.close()
     print("程序结束")
+    
 
-
-def status_change(switch: bool, need_pause: bool, exit: bool):
+def status_change(switch: bool, need_pause: bool, exit: bool,unstart:
+bool):
     global translate_type
     global pause
     global process_exit
     global enable_debug
+    global prostart
+
     process_exit = exit
     pause = need_pause
+    prostart = unstart
     if switch:
         translate_type = int(not bool(translate_type))
 
@@ -440,17 +451,16 @@ def status_change(switch: bool, need_pause: bool, exit: bool):
 def main():
     # cache=get_image_db_cache()
     # enable_debug=False
-    # print("shift+g翻译卡组卡片,shift+f翻译决斗中卡片,esc关闭\n请确保您已经点开了目标卡片的详细信息!!!")
-    # keyboard.add_hotkey('shift+g',translate,args=(1,cache,enable_debug))
-    # keyboard.add_hotkey('shift+f',translate,args=(2,cache,enable_debug))
+    # print("F2翻译卡组卡片,F3翻译决斗中卡片,esc关闭\n请确保您已经点开了目标卡片的详细信息!!!")
+    # keyboard.add_hotkey('F2',translate,args=(1,cache,enable_debug))
+    # keyboard.add_hotkey('F3',translate,args=(2,cache,enable_debug))
     # keyboard.wait('ctrl+q')
     # print("程序结束")
 
-    keyboard.add_hotkey(switch_hotkey, status_change,
-                        args=(True, False, False))
-    keyboard.add_hotkey(exit_hotkey, status_change, args=(False, False, True))
-    keyboard.add_hotkey(pause_hotkey, status_change, args=(False, True, False))
-
+    keyboard.add_hotkey(switch_hotkey, status_change,args=(True, False, False,False))
+    keyboard.add_hotkey(exit_hotkey, status_change, args=(False, False, True,False))
+    keyboard.add_hotkey(pause_hotkey, status_change, args=(False, True, False,False))
+    keyboard.add_hotkey(goon_hotkey, status_change, args=(False, False, False,False))
     p = Thread(target=translate_check_thread)
     p.start()
     p.join()
